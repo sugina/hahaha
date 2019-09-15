@@ -1,0 +1,55 @@
+class Solution {
+   public int threeSumMulti(int[] A, int target) {
+        TreeMap<Integer, Long> tmap = new TreeMap<Integer, Long>();
+        long res = 0;
+        int M = (int)1e9 + 7;
+        for(int num : A) {
+            tmap.put(num, tmap.getOrDefault(num, 0l) + 1);
+        }
+        Integer[] nums = tmap.keySet().toArray(new Integer[tmap.size()]);
+    
+        for(int i=0; i<nums.length; i++) {
+            int want = target - nums[i];
+            int start = tmap.get(nums[i]) > 1 ? i : i+1;
+            int end = nums.length -1;
+            while (start <= end) {
+                int twoSum = nums[start] + nums[end];
+                if(twoSum < want) {
+                    start ++;
+                } else if (twoSum > want) {
+                    end --;
+                } else if (twoSum == want) {
+                    if(start == end) {
+                        if(start == i) {
+                            if(tmap.get(nums[start]) >= 3) {
+                                res += calCount(tmap.get(nums[start]), 3);
+                                res %= M;
+                            } 
+                        } else {
+                            if(tmap.get(nums[start]) >= 2) {
+                                res += calCount(tmap.get(nums[start]), 2) * tmap.get(nums[i]);
+                                res %= M;
+                            }
+                        }
+                        break;
+                    } else {
+                        if(start == i) {
+                            res += calCount(tmap.get(nums[i]), 2) * tmap.get(nums[end]);
+                        } else {
+                            res += tmap.get(nums[start]) * tmap.get(nums[end]) * tmap.get(nums[i]);
+                        }
+                        res %= M;
+                        start ++;
+                        end --;
+                    }
+                }
+            }
+        }
+        return (int)res;
+    }
+    private long calCount(long total, int count) {
+        if(count == 2) return total * (total -1) / 2;
+        if(count == 3) return total * (total -1) * (total -2) / 6;
+        return 0;
+    }
+}
